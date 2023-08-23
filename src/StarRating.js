@@ -7,6 +7,8 @@ const containerStyle = {
   gap: "16px",
 };
 
+const test = 1;
+
 const starContainerStyle = {
   display: "flex",
 };
