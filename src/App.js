@@ -51,31 +51,33 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
 const KEY = "cf1bd455";
-
+// `https://www.omdbapi.com/?s=${tempQuery}&apikey=${KEY}`;
 export default function App() {
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const query = "Interstellar";
+  const tempQuery = "interstellar";
 
   useEffect(function () {
     async function fetchMovies() {
       try {
         setIsLoading(true);
         const res = await fetch(
-          `https://www.omdbapi.com/?s=${query}&apikey=${KEY}`
+          `https://www.omdbapi.com/?s=${tempQuery}&apikey=${KEY}`
         );
 
         if (!res.ok)
           throw new Error("Something went wrong with fetching movies");
 
         const data = await res.json();
-
         if (data.Response === "False") throw new Error("Movie not found");
+
         setMovies(data.Search);
+        // console.log(data.Search);
       } catch (err) {
-        console.error(err.message);
+        console.log(err.message);
         setError(err.message);
       } finally {
         setIsLoading(false);
@@ -87,7 +89,7 @@ export default function App() {
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -95,7 +97,7 @@ export default function App() {
         <Box>
           {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
           {isLoading && <Loader />}
-          {isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} />}
           {error && <ErrorMessage message={error} />}
         </Box>
 
@@ -139,9 +141,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
